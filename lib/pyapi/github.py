@@ -9,6 +9,13 @@ query = gql(
     """
 query getRepository($owner: String!, $name: String!) {
   repository(owner: $owner, name: $name) {
+    nameWithOwner
+    pullRequests(states:OPEN, first:1){
+      totalCount
+    }
+    issues(states:OPEN){
+      totalCount
+    }
     defaultBranchRef {
       target {
         ... on Commit {
@@ -46,7 +53,7 @@ def github_graphql(name: PluginName) -> dict:
     """Return github graphql data."""
 
     if not (result := github_org_repo(name)):
-        raise ValueError(f"No github repo for {name}")
+        return {}
 
     owner, name = result
     variables = {"owner": owner, "name": name}
